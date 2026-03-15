@@ -12,6 +12,7 @@ import com.blog.service.FileUploadService;
 import com.blog.service.LikeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +29,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class ArticleController {
 
+    private static final int PAGE_SIZE = 6;
+
     private final ArticleService articleService;
     private final CommentaireService commentaireService;
     private final LikeService likeService;
@@ -35,11 +38,12 @@ public class ArticleController {
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
 
-    // ─── LISTE ──────────────────────────────────────────────────────────────
+    // ─── LISTE avec pagination ───────────────────────────────────────────────
     @GetMapping
     public String liste(@RequestParam(required = false) Long categorieId,
                         @RequestParam(required = false) String sort,
                         @RequestParam(required = false) String q,
+                        @RequestParam(defaultValue = "0") int page,
                         Model model) {
 
         if (q != null && !q.isBlank()) {
@@ -51,7 +55,11 @@ public class ArticleController {
             model.addAttribute("articles", articleService.getByCategorie(categorieId));
             model.addAttribute("categorieSelectionnee", categorieId);
         } else {
-            model.addAttribute("articles", articleService.getAll());
+            Page<Article> articlesPage = articleService.getAllPaginated(page, PAGE_SIZE);
+            model.addAttribute("articles", articlesPage.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", articlesPage.getTotalPages());
+            model.addAttribute("totalItems", articlesPage.getTotalElements());
         }
 
         model.addAttribute("categories", categorieRepository.findAll());
@@ -246,4 +254,3 @@ public class ArticleController {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
     }
 }
-

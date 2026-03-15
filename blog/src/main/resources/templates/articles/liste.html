@@ -147,6 +147,29 @@
             <a th:href="@{/articles}" class="btn btn-outline-secondary mt-2">Voir tous les articles</a>
         </div>
 
+        <!-- Pagination -->
+        <div class="mt-5 d-flex justify-content-center" th:if="${totalPages > 1}">
+            <nav aria-label="Pagination">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{/articles(page=${currentPage - 1})}" aria-label="Précédent">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${currentPage == i} ? 'active'">
+                        <a class="page-link" th:href="@{/articles(page=${i})}" th:text="${i + 1}"
+                           style="background-color: ${currentPage == i ? '#c9a84c' : ''}; border-color: ${currentPage == i ? '#c9a84c' : ''}; color: ${currentPage == i ? '#111' : ''};">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/articles(page=${currentPage + 1})}" aria-label="Suivant">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
     </div>
 </section>
 
