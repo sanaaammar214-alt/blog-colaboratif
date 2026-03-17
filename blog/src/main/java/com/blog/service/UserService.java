@@ -1,5 +1,6 @@
 package com.blog.service;
 
+import com.blog.exception.ResourceNotFoundException;
 import com.blog.model.Role;
 import com.blog.model.User;
 import com.blog.repository.UserRepository;
@@ -20,21 +21,26 @@ public class UserService {
     @Transactional
     public void inscrire(User user) {
         // Validations
-        if (user.getEmail() == null || user.getEmail().isBlank())
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
             throw new IllegalArgumentException("Email obligatoire.");
+        }
 
-        if (userRepository.existsByEmail(user.getEmail()))
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà utilisé.");
+        }
 
-        if (user.getPassword() == null || user.getPassword().length() < 6)
+        if (user.getPassword() == null || user.getPassword().length() < 6) {
             throw new IllegalArgumentException("Mot de passe minimum 6 caractères.");
+        }
 
-        if (user.getNom() == null || user.getNom().isBlank())
+        if (user.getNom() == null || user.getNom().isBlank()) {
             throw new IllegalArgumentException("Le nom est obligatoire.");
+        }
 
         // Sécurité : interdire création d'ADMIN via register
-        if (user.getRole() == null || user.getRole() == Role.ADMIN)
+        if (user.getRole() == null || user.getRole() == Role.ADMIN) {
             user.setRole(Role.LECTEUR);
+        }
 
         // Hachage BCrypt
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -48,7 +54,7 @@ public class UserService {
 
     public User getById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable : " + id));
     }
 
     @Transactional

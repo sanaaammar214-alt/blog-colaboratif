@@ -27,4 +27,17 @@ public class Commentaire {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    // --- REPLIES ---
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Commentaire parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("dateCommentaire ASC")
+    private java.util.List<Commentaire> reponses = new java.util.ArrayList<>();
+
+    // --- LIKES ---
+    @OneToMany(mappedBy = "commentaire", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.Set<LikeCommentaire> likes = new java.util.HashSet<>();
 }

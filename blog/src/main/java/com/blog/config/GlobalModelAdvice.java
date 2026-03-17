@@ -1,5 +1,6 @@
 package com.blog.config;
 
+import com.blog.repository.CategorieRepository;
 import com.blog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -12,13 +13,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class GlobalModelAdvice {
 
     private final UserRepository userRepository;
+    private final CategorieRepository categorieRepository;
 
     @ModelAttribute
-    public void addCurrentUser(Authentication authentication, Model model) {
+    public void addGlobalAttributes(Authentication authentication, Model model) {
+        // Ajouter les catégories sur toutes les pages pour le header
+        model.addAttribute("categories", categorieRepository.findAll());
+
         if (authentication != null && authentication.isAuthenticated()
                 && !authentication.getName().equals("anonymousUser")) {
             userRepository.findByEmail(authentication.getName())
-                    .ifPresent(user -> model.addAttribute("currentUserNom", user.getNom()));
+                    .ifPresent(user -> {
+                        model.addAttribute("currentUser", user);
+                        model.addAttribute("currentUserNom", user.getNom());
+                    });
         }
     }
 }

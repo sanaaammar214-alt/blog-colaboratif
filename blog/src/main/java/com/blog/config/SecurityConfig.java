@@ -12,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 @Configuration
 @EnableWebSecurity
@@ -31,9 +32,11 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/webjars/**", "/uploads/**").permitAll()
-                        .requestMatchers("/", "/register", "/login", "/about", "/contact").permitAll()
+                        .requestMatchers("/", "/register", "/login", "/about", "/contact", "/conditions").permitAll()
                         .requestMatchers("/articles", "/articles/{id}").permitAll()
                         .requestMatchers("/articles/search").permitAll()
+                        .requestMatchers("/articles/devenir-auteur", "/articles/devenir-auteur-confirm").authenticated()
+                        .requestMatchers("/articles/mes-articles").hasAnyRole("AUTEUR", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/articles/new", "/articles/save").hasAnyRole("AUTEUR", "ADMIN")
                         .requestMatchers("/articles/{id}/edit", "/articles/{id}/update").hasAnyRole("AUTEUR", "ADMIN")
@@ -68,11 +71,12 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                // On pointe vers le dossier physique src/main/resources/... 
-                // pour que les uploads y soient sauvegardés et servis.
-                String absolutePath = new File(uploadDir).getAbsolutePath();
+                String absolutePath = Paths.get(System.getProperty("user.dir"), uploadDir)
+                        .toAbsolutePath()
+                        .normalize()
+                        .toString();
                 String location = "file:" + absolutePath + File.separator;
-                
+
                 registry.addResourceHandler("/uploads/images/**")
                         .addResourceLocations(location);
             }

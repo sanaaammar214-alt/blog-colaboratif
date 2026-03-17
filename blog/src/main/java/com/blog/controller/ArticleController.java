@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -62,9 +63,16 @@ public class ArticleController {
             model.addAttribute("totalItems", articlesPage.getTotalElements());
         }
 
-        model.addAttribute("categories", categorieRepository.findAll());
         model.addAttribute("sortSelectionne", sort);
         return "articles/liste";
+    }
+
+    // ─── LISTE MES ARTICLES ────────────────────────────────────────────────
+    @GetMapping("/mes-articles")
+    public String mesArticles(Principal principal, Model model) {
+        User user = getUser(principal);
+        model.addAttribute("articles", articleService.getByAuteur(user.getId()));
+        return "articles/mes-articles";
     }
 
     // ─── DETAIL ─────────────────────────────────────────────────────────────
@@ -74,10 +82,10 @@ public class ArticleController {
         model.addAttribute("article", article);
         model.addAttribute("commentaires", commentaireService.getByArticle(id));
         model.addAttribute("nbLikes", article.getLikes().size());
+        model.addAttribute("nbArticlesAuteur", articleService.countArticlesByAuteur(article.getAuteur().getId()));
 
         if (principal != null) {
             User user = getUser(principal);
-            model.addAttribute("currentUser", user);
             model.addAttribute("aLike", likeService.hasLiked(user.getId(), id));
         }
         return "articles/detail";
@@ -87,7 +95,6 @@ public class ArticleController {
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("article", new Article());
-        model.addAttribute("categories", categorieRepository.findAll());
         return "articles/form";
     }
 
@@ -98,10 +105,10 @@ public class ArticleController {
                        @RequestParam(required = false) Long categorieId,
                        @RequestParam(required = false) MultipartFile imageFile,
                        Principal principal,
-                       Model model) {
+                       Model model,
+                       RedirectAttributes redirectAttributes) {
 
         if (result.hasErrors()) {
-            model.addAttribute("categories", categorieRepository.findAll());
             return "articles/form";
         }
 
@@ -122,10 +129,10 @@ public class ArticleController {
             articleService.save(article);
         } catch (IOException e) {
             model.addAttribute("error", "Échec de l'upload de l'image : " + e.getMessage());
-            model.addAttribute("categories", categorieRepository.findAll());
             return "articles/form";
         }
-        
+
+        redirectAttributes.addFlashAttribute("successMessage", "Article publié avec succès !");
         return "redirect:/articles";
     }
 
@@ -135,12 +142,11 @@ public class ArticleController {
         Article article = articleService.getById(id);
         User user = getUser(principal);
 
-        if (!articleService.peutModifier(article, user)) {
+        if (!articleService.peutEditer(article, user)) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à modifier cet article.");
         }
 
         model.addAttribute("article", article);
-        model.addAttribute("categories", categorieRepository.findAll());
         return "articles/form";
     }
 
@@ -152,18 +158,18 @@ public class ArticleController {
                          @RequestParam(required = false) Long categorieId,
                          @RequestParam(required = false) MultipartFile imageFile,
                          Principal principal,
-                         Model model) {
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
 
         Article article = articleService.getById(id);
         User user = getUser(principal);
 
-        if (!articleService.peutModifier(article, user)) {
+        if (!articleService.peutEditer(article, user)) {
             throw new AccessDeniedException("Accès refusé.");
         }
 
         if (result.hasErrors()) {
             model.addAttribute("article", article);
-            model.addAttribute("categories", categorieRepository.findAll());
             return "articles/form";
         }
 
@@ -186,24 +192,30 @@ public class ArticleController {
         } catch (IOException e) {
             model.addAttribute("error", "Échec de l'upload de l'image : " + e.getMessage());
             model.addAttribute("article", article);
-            model.addAttribute("categories", categorieRepository.findAll());
             return "articles/form";
         }
-        
+
+        redirectAttributes.addFlashAttribute("successMessage", "Article mis à jour avec succès !");
         return "redirect:/articles/" + id;
     }
 
     // ─── DELETE ─────────────────────────────────────────────────────────────
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id, Principal principal) {
+    public String delete(@PathVariable Long id,
+                         @RequestParam(required = false) String redirect,
+                         Principal principal) {
         Article article = articleService.getById(id);
         User user = getUser(principal);
 
-        if (!articleService.peutModifier(article, user)) {
+        if (!articleService.peutSupprimer(article, user)) {
             throw new AccessDeniedException("Accès refusé.");
         }
 
         articleService.delete(id);
+
+        if ("mes-articles".equals(redirect)) {
+            return "redirect:/articles/mes-articles";
+        }
         return "redirect:/articles";
     }
 
@@ -246,6 +258,26 @@ public class ArticleController {
         User user = getUser(principal);
         commentaireService.delete(commentId, user);
         return "redirect:/articles/" + articleId;
+    }
+
+    @PostMapping("/devenir-auteur")
+    public String devenirAuteur(Principal principal) {
+        User user = getUser(principal);
+        if (user.getRole() == com.blog.model.Role.LECTEUR) {
+            return "redirect:/conditions?source=upgrade";
+        }
+        return "redirect:/articles/new";
+    }
+
+    @PostMapping("/devenir-auteur-confirm")
+    public String devenirAuteurConfirm(Principal principal) {
+        User user = getUser(principal);
+        if (user.getRole() == com.blog.model.Role.LECTEUR) {
+            user.setRole(com.blog.model.Role.AUTEUR);
+            user.setConditionsAcceptees(true);
+            userRepository.save(user);
+        }
+        return "redirect:/articles/new";
     }
 
     // ─── HELPER ─────────────────────────────────────────────────────────────

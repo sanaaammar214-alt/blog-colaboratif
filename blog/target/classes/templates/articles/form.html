@@ -65,7 +65,8 @@
 
             <div class="mb-4">
                 <label class="form-label fw-semibold">Photo de l'article</label>
-                <input type="file" name="imageFile" class="form-control" accept="image/*">
+                <input type="file" name="imageFile" class="form-control" accept="image/*"
+                       onchange="if(this.files[0]?.size > 5*1024*1024){ alert('Image trop lourde (max 5 Mo)'); this.value=''; }">
                 <div th:if="${article.image != null}" class="mt-2">
                     <img th:src="@{/uploads/images/{img}(img=${article.image})}"
                          alt="Image actuelle"

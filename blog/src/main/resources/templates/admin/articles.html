@@ -5,21 +5,22 @@
     <title>Articles — Admin · CollabInk</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet"/>
     <style>
-        :root{--bg:#0a0a0f;--surface:#13131a;--border:#1e1e2e;--text:#e8e4dc;--muted:#6b6875;--accent:#c8102e;--gold:#c49a2a;--serif:'Playfair Display',serif;--sans:'DM Sans',sans-serif;--mono:'DM Mono',monospace;}
+        /* Palette claire cohérente avec la page d'accueil dorée */
+        :root{--bg:#f8f6f2;--surface:#ffffff;--border:#e0ded7;--text:#1a1a2e;--muted:#6b6875;--accent:#c9a84c;--gold:#c9a84c;--serif:'EB Garamond',serif;--sans:'Inter',sans-serif;--mono:'DM Mono',monospace;}
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
         body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;display:flex;min-height:100vh;}
-        .sidebar{width:240px;min-width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;}
+        .sidebar{width:240px;min-width:240px;background:#1a1a2e;border-right:1px solid var(--border);display:flex;flex-direction:column;color:#f5f3ea;}
         .sidebar-brand{padding:1.5rem;border-bottom:1px solid var(--border);}
-        .sidebar-brand a{font-family:var(--serif);font-size:1.4rem;font-weight:700;text-decoration:none;color:var(--text);}
+        .sidebar-brand a{font-family:var(--serif);font-size:1.4rem;font-weight:700;text-decoration:none;color:#f5f3ea;}
         .sidebar-brand a span{color:var(--accent);}
         .sidebar-brand p{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-top:0.2rem;}
         .sidebar-nav{flex:1;padding:1rem 0;}
         .nav-section{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);padding:1rem 1.5rem 0.4rem;}
         .nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 1.5rem;text-decoration:none;color:var(--muted);font-size:0.85rem;transition:all 0.2s;border-left:2px solid transparent;}
-        .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03);}
-        .nav-item.active{color:var(--text);border-left-color:var(--accent);background:rgba(200,16,46,0.06);}
+        .nav-item:hover{color:#f5f3ea;background:rgba(255,255,255,0.04);}
+        .nav-item.active{color:#f5f3ea;border-left-color:var(--accent);background:rgba(201,168,76,0.18);}
         .sidebar-footer{padding:1rem;border-top:1px solid var(--border);}
-        .logout-form button{width:100%;padding:0.6rem;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:var(--sans);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
+        .logout-form button{width:100%;padding:0.6rem;background:transparent;border:1px solid var(--border);color:#f5f3ea;font-family:var(--sans);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
         .logout-form button:hover{border-color:var(--accent);color:var(--accent);}
         .main{flex:1;overflow-y:auto;}
         .main-header{padding:2rem 2.5rem 1.5rem;border-bottom:1px solid var(--border);}
@@ -66,6 +67,10 @@
         <p th:text="${articles.size()} + ' articles publiés'">0 articles</p>
     </div>
     <div class="main-body">
+        <div th:if="${successMessage}" class="alert alert-success mb-3" style="border-color: rgba(201,168,76,0.35); background: rgba(201,168,76,0.12); color: var(--text);">
+            <strong style="color: var(--accent);">Succès :</strong>
+            <span th:text="${successMessage}">Action effectuée.</span>
+        </div>
         <table>
             <thead>
             <tr><th>#</th><th>Titre</th><th>Auteur</th><th>Catégorie</th><th>Date</th><th>❤</th><th>💬</th><th>Actions</th></tr>

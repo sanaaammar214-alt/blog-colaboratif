@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::body})}">
+<body>
+
+<div class="page-title">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Conditions de Publication et Droits d'Auteur</h1>
+        <nav class="breadcrumbs">
+            <ol>
+                <li><a th:href="@{/}">Accueil</a></li>
+                <li class="current">Conditions</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card border-0 shadow-sm p-4" style="background: #f8f6f2;">
+                    <h2 style="color: #c9a84c; font-family: 'EB Garamond', serif;">1. Droits d'Auteur</h2>
+                    <p>
+                        Tout contenu publié sur CollabInk reste la propriété intellectuelle de son auteur. 
+                        En publiant sur cette plateforme, vous accordez à CollabInk une licence non exclusive 
+                        pour diffuser et promouvoir votre contenu.
+                    </p>
+
+                    <h2 class="mt-4" style="color: #c9a84c; font-family: 'EB Garamond', serif;">2. Lois de Publication</h2>
+                    <p>
+                        Les auteurs s'engagent à ne pas publier de contenu :
+                    </p>
+                    <ul>
+                        <li>Diffamatoire, injurieux ou incitant à la haine.</li>
+                        <li>Contrefaisant les droits de propriété intellectuelle de tiers.</li>
+                        <li>Contenant des informations personnelles de tiers sans leur consentement.</li>
+                        <li>Faisant l'apologie de crimes ou de comportements illégaux.</li>
+                    </ul>
+
+                    <h2 class="mt-4" style="color: #c9a84c; font-family: 'EB Garamond', serif;">3. Modération et Suppression</h2>
+                    <p>
+                        L'administrateur se réserve le droit de supprimer tout article ou commentaire qui ne respecte pas 
+                        les présentes conditions, sans préavis. L'administrateur n'a pas le droit de modifier le contenu 
+                        original d'un auteur afin de préserver l'intégrité de l'œuvre.
+                    </p>
+
+                    <h2 class="mt-4" style="color: #c9a84c; font-family: 'EB Garamond', serif;">4. Engagement de l'Utilisateur</h2>
+                    <p>
+                        En vous inscrivant ou en utilisant les services de CollabInk (publication, commentaire), 
+                        vous reconnaissez avoir lu, compris et accepté l'intégralité de ces conditions.
+                    </p>
+                </div>
+                
+                <div class="mt-4 text-center" th:if="${param.source != null and param.source[0] == 'upgrade'}">
+                    <form th:action="@{/articles/devenir-auteur-confirm}" method="post">
+                        <button type="submit" class="btn btn-lg" style="background: #c9a84c; color: #1a1a2e; font-weight: bold; border: none;">
+                            J'accepte les conditions et je souhaite devenir auteur
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

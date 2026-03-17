@@ -83,6 +83,22 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
         """)
     List<Article> searchByKeyword(String keyword);
 
+    // Articles recommandés (par catégories aimées)
+    @Query("""
+        SELECT DISTINCT a FROM Article a
+        LEFT JOIN FETCH a.likes
+        LEFT JOIN FETCH a.commentaires
+        LEFT JOIN FETCH a.categorie
+        LEFT JOIN FETCH a.auteur
+        WHERE a.categorie.id IN :categorieIds
+        AND a.id NOT IN (SELECT l.article.id FROM Like l WHERE l.user.id = :userId)
+        ORDER BY a.datePublication DESC
+    """)
+    List<Article> findRecommendedByCategories(List<Long> categorieIds, Long userId);
+
+    // Compter les articles d'un auteur
+    long countByAuteurId(Long auteurId);
+
     // Pagination
     Page<Article> findAllByOrderByDatePublicationDesc(Pageable pageable);
 }

@@ -83,7 +83,7 @@ public class DataInitializer implements CommandLineRunner {
             a1.setAuteur(auteur);
             a1.setCategorie(tech);
             a1.setDatePublication(LocalDateTime.now().minusDays(2));
-            a1.setImage("tech.jpg"); // Image fictive (doit exister dans C:/Users/HP/uploads/img/)
+            a1.setImage(null);
             articleRepository.save(a1);
 
             // Article 2
@@ -93,7 +93,7 @@ public class DataInitializer implements CommandLineRunner {
             a2.setAuteur(admin);
             a2.setCategorie(science);
             a2.setDatePublication(LocalDateTime.now().minusHours(5));
-            a2.setImage("mars.jpg"); // Image fictive
+            a2.setImage(null);
             articleRepository.save(a2);
 
             // Article 3 : Test Upload Interne
@@ -103,7 +103,7 @@ public class DataInitializer implements CommandLineRunner {
             a3.setAuteur(admin);
             a3.setCategorie(tech);
             a3.setDatePublication(LocalDateTime.now().minusMinutes(30));
-            a3.setImage("test-upload.jpg"); 
+            a3.setImage(null);
             articleRepository.save(a3);
 
             log.info("✅ Articles de test créés avec succès");

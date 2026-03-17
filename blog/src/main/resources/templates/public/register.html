@@ -41,6 +41,13 @@
                 <div class="form-text text-muted">Le rôle Admin ne peut être attribué que par un administrateur.</div>
             </div>
 
+            <div class="mb-4 form-check">
+                <input type="checkbox" class="form-check-input" id="conditions" name="conditionsAcceptees" required>
+                <label class="form-check-label" for="conditions">
+                    J'accepte les <a th:href="@{/conditions}" target="_blank" style="color:#c9a84c;">conditions de publication et les droits d'auteur</a>.
+                </label>
+            </div>
+
             <button class="btn w-100 fw-bold" type="submit"
                     style="background:#c9a84c;color:#111;border:none;padding:0.75rem;">
                 Créer mon compte

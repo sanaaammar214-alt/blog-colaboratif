@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -25,6 +26,15 @@ public class GlobalExceptionHandler {
         mav.addObject("status", 404);
         mav.addObject("error", "Ressource introuvable");
         mav.addObject("message", ex.getMessage());
+        return mav;
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ModelAndView handleNoHandlerFound(NoHandlerFoundException ex) {
+        ModelAndView mav = new ModelAndView("error/generic");
+        mav.addObject("status", 404);
+        mav.addObject("error", "Page introuvable");
+        mav.addObject("message", "La page demandée n'existe pas.");
         return mav;
     }
 

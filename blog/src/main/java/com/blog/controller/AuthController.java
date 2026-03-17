@@ -31,6 +31,7 @@ public class AuthController {
             @RequestParam String email,
             @RequestParam String password,
             @RequestParam(defaultValue = "LECTEUR") String role,
+            @RequestParam(defaultValue = "false") boolean conditionsAcceptees,
             Model model) {
 
         try {
@@ -38,6 +39,7 @@ public class AuthController {
             user.setNom(nom);
             user.setEmail(email);
             user.setPassword(password);
+            user.setConditionsAcceptees(conditionsAcceptees);
 
             // Sécurité : seulement LECTEUR ou AUTEUR autorisé
             if ("AUTEUR".equals(role)) {
@@ -63,6 +65,11 @@ public class AuthController {
     @GetMapping("/contact")
     public String contact() {
         return "public/contact";
+    }
+
+    @GetMapping("/conditions")
+    public String conditions() {
+        return "public/conditions";
     }
 
     @GetMapping("/403")

@@ -30,6 +30,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role = Role.LECTEUR;
 
+    private boolean conditionsAcceptees = false;
+
+    @org.hibernate.annotations.CreationTimestamp
+    private java.time.LocalDateTime dateInscription;
+
     @OneToMany(mappedBy = "auteur", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Article> articles = new HashSet<>();
 
